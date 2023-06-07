@@ -4,6 +4,7 @@ import sqlite3
 class ProgramaPrincipal:
 
     def menu(self):
+
         while True:
             print("Bienvenidos a la biblioteca!")
             print("1- Cargar libros")
@@ -17,12 +18,15 @@ class ProgramaPrincipal:
             print("8- Algo largo que dice ahi jajaja")
             nro = int(input("Por favor ingrese un número"))
 
+            if nro == 1:
+                cargaLibros()
+
 #Definimos libro y le damos sus atributos
-class Libro:
-    id_autoincremental = 0
+class Libro:  
+    id_autoincremental = 0   #paso 1
 
     def __init__(self, isbn, titulo, autor, genero, precio, fecha_ultimo_precio, cant_disponible):
-        self.id = Libro.generar_id()
+        self.id = Libro.generar_id()  #paso 2
         self.isbn = isbn
         self.titulo = titulo
         self.autor = autor
@@ -33,39 +37,45 @@ class Libro:
 
     @classmethod
     def generar_id(cls):
-        cls.id_autoincremental += 1
+        cls.id_autoincremental += 1  #paso final
         return cls.id_autoincremental
 ##############################
 
 #Intento de carga 
 def cargaLibros():
- isbn = input("Ingrese el ISBN del libro: ")
- titulo = input("Ingrese el título del libro: ")
- autor = input("Ingrese el autor del libro: ")
- genero = input("Ingrese el género del libro: ")
- precio = float(input("Ingrese el precio del libro: "))
- fecha_ultimo_precio = input("Ingrese la fecha del último precio (YYYY-MM-DD): ")
- cant_disponible = int(input("Ingrese la cantidad disponible del libro: "))
+    isbn = input("Ingrese el ISBN del libro: ")
+    titulo = input("Ingrese el título del libro: ")
+    autor = input("Ingrese el autor del libro: ")
+    genero = input("Ingrese el género del libro: ")
+    precio = float(input("Ingrese el precio del libro: "))
+    fecha_ultimo_precio = input("Ingrese la fecha del último precio (YYYY-MM-DD): ")
+    cant_disponible = int(input("Ingrese la cantidad disponible del libro: "))
 
- libro = Libro(isbn, titulo, autor, genero, precio, fecha_ultimo_precio, cant_disponible)
+    return False
+
+    libro = Libro(isbn, titulo, autor, genero, precio, fecha_ultimo_precio, cant_disponible)
 
 #Intento de modificacion de id
-def modificar_precio(self, nuevo_precio):
-        nuevo_precio = float(input("Ingrese el nuevo precio del libro: "))
-        confirmacion = input(f"¿Estás seguro que deseas modificar el precio del libro '{self.titulo}'? (S/N): ")
-        if confirmacion.upper() == "S":
-            self.precio = nuevo_precio
-            self.fecha_ultimo_precio = datetime.now().strftime("%Y-%m-%d")
-            print("El precio del libro ha sido modificado exitosamente.")
-        else:
-            print("La modificación del precio del libro ha sido cancelada.")      
+
+
+# def modificar_precio(self, nuevo_precio):
+#         nuevo_precio = float(input("Ingrese el nuevo precio del libro: "))
+#         confirmacion = input(f"¿Estás seguro que deseas modificar el precio del libro '{self.titulo}'? (S/N): ")
+#         if confirmacion.upper() == "S":
+#             self.precio = nuevo_precio
+#             self.fecha_ultimo_precio = datetime.now().strftime("%Y-%m-%d")
+#             print("El precio del libro ha sido modificado exitosamente.")
+#         else:
+#             print("La modificación del precio del libro ha sido cancelada.")      
+
 
 ########################################            
 
 # Modificar el precio del libro
-libro.modificar_precio(nuevo_precio)
+# libro.modificar_precio(nuevo_precio)
 
 ############################################
 
-
+programa = ProgramaPrincipal()
+programa.menu()
 
