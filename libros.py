@@ -4,7 +4,7 @@ import sqlite3
 class Conexiones:
     
     def abrirConexion(self):
-        self.conexion = sqlite3.connect("Biblioteca")
+        self.conexion = sqlite3.connect("Biblioteca.db")
         self.cursor = self.conexion.cursor()
 
     def cerrarConexion(self):
@@ -29,6 +29,14 @@ class ProgramaPrincipal:
             else:
                 if opcion == 1:
                     self.cargarLibros()
+                elif opcion == 2:
+                    self.modificarLibros()
+                elif opcion == 3:
+                    self.borrarLibro()
+                elif opcion == 5:
+                    self.mostrarListado()
+
+    #CARGA DE LIBROS
 
     def cargarLibros(self):
         print("hola desde cargar libros")
@@ -52,8 +60,70 @@ class ProgramaPrincipal:
         finally:
             miConexion.cerrarConexion()
 
+    #MODIFICAR PRECIO DEL LIBRO
+
+    def modificarLibros(self):
+
+        conexiooon = Conexiones()
+        conexiooon.abrirConexion()
+
+        try:
+            buscar = int(input("Escriba el ID del libro que desea modificar: "))
+            nuevo_precio = float(input("Ingrese el nuevo precio del libro: "))
+
+            libro = conexiooon.cursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
+
+            if libro:
+                print("Se encontro el libro")
+                confirmacion = int(input("¿Está seguro de realizar la modificación? 1 = SII RE/0 = No :("))
+
+                if confirmacion == 1:
+                    conexiooon.cursor.execute("UPDATE LIBROS SET Precio = ? WHERE ID = ?", (nuevo_precio, buscar))
+                    conexiooon.conexion.commit()
+
+                    print("La MODIFICACIÓN, ha sido REALIZADA")
+                else:
+                    print("MODIFICACIÓN, CANCELADA")
+
+            else:
+                print("No se encontró ningún libro con el ID proporcionado.")
+
+        except ValueError:
+            print("El ID debe ser un número entero.")
+        except:
+            print("Ocurrió un error al intentar modificar el libro.")
+        finally:
+            conexiooon.cerrarConexion()
+
+    #BORRAR LIBRO
+
+    # def borrarLibro(self):
+    #     conexiooon = Conexiones()
+    #     conexiooon.abrirConexion()
+
+        #jeeeeeeeeeejejejejej aca hara cosas melo
 
 
+
+
+
+    #MOSTRAR LA LISTA DE LIBROS
+
+    def mostrarListado(self):
+        conexiooon = Conexiones()
+        conexiooon.abrirConexion()
+
+        try:
+            libros = conexiooon.cursor.execute("SELECT * FROM LIBROS ORDER BY ID, Autor, Titulo").fetchall()
+
+            print("----- LISTADO DE LIBROS -----")
+            for libro in libros:
+                print(f"ID: {libro[0]}, Autor: {libro[3]}, Título: {libro[2]}, cantidad: {libro[7]}")
+
+        except:
+            print("epaa")
+        finally:
+            conexiooon.cerrarConexion()
 
     def crearTabla(self):
         miConexion = Conexiones()
