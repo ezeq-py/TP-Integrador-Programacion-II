@@ -12,6 +12,7 @@ class Conexiones:
 
 class ProgramaPrincipal:
 
+    #MENU
     def menu(self):
         while True:
             print("----------MENÚ--------------")
@@ -36,8 +37,7 @@ class ProgramaPrincipal:
                 elif opcion == 5:
                     self.mostrarListado()
 
-    #CARGA DE LIBROS
-
+    #1.CARGA DE LIBROS
     def cargarLibros(self):
         print("hola desde cargar libros")
         isbm = input("Ingrese ISBM")
@@ -60,10 +60,8 @@ class ProgramaPrincipal:
         finally:
             miConexion.cerrarConexion()
 
-    #MODIFICAR PRECIO DEL LIBRO
-
+    #2.MODIFICAR PRECIO DEL LIBRO
     def modificarLibros(self):
-
         conexiooon = Conexiones()
         conexiooon.abrirConexion()
 
@@ -91,23 +89,43 @@ class ProgramaPrincipal:
         except ValueError:
             print("El ID debe ser un número entero.")
         except:
-            print("Ocurrió un error al intentar modificar el libro.")
+            print("Ocurrió un error al intentar MODIFICAR el libro.")
         finally:
             conexiooon.cerrarConexion()
 
-    #BORRAR LIBRO
+    #3.BORRAR LIBRO
+    def borrarLibro(self):
+        conexiooon = Conexiones()
+        conexiooon.abrirConexion()
+        try:
+            buscar = int(input("Escriba el ID del libro que desea eliminar: "))
+            libro = conexiooon.cursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
+            
+            if libro:
+                print("Se encontro el libro")
+                confirmarEliminarLibro = int(input("¿Está seguro que desea eliminar este libro de la tabla? 1= SI / 0= NO"))
+                
+                if confirmarEliminarLibro == 1:
+                    conexiooon.cursor.execute("DELETE FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
+                    conexiooon.conexion.commit()
+                    print("Se ha ELIMINADO el libro")
+                else:
+                    print("ELIMINACIÓN, CANCELADA")
+            else: 
+                print("No se encontró ningún libro con el ID proporcionado.")
+                
+        except ValueError:
+            print("El ID debe ser un número entero.")
+        except:
+            print("Ocurrió un error al intentar ELIMINAR el libro.")
+        finally:
+            conexiooon.cerrarConexion()
 
-    # def borrarLibro(self):
-    #     conexiooon = Conexiones()
-    #     conexiooon.abrirConexion()
-
-        #jeeeeeeeeeejejejejej aca hara cosas melo
 
 
 
 
-
-    #MOSTRAR LA LISTA DE LIBROS
+    #5.MOSTRAR LA LISTA DE LIBROS
 
     def mostrarListado(self):
         conexiooon = Conexiones()
