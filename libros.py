@@ -2,7 +2,7 @@
 import sqlite3
 import math 
 from typing import final
-
+from datetime import datetime
 
 class Conexiones:
 
@@ -26,6 +26,7 @@ class ProgramaPrincipal:
             print("5-Listado de Libros")
             print("6-Ventas")
             print("7-Actualizar precio")
+            print("8-Registros por fecha")
             print("0-Salir del menú")
 
             opcion = int(input("Elija una opción: "))
@@ -47,8 +48,8 @@ class ProgramaPrincipal:
                     self.ventas()
                 elif opcion == 7:
                     self.actualizarPrecio()
-                # elif opcion == 8:
-                    # self.notienenombre()
+                elif opcion == 8:
+                    self.registrosAnteriores()
 
     # 1.CARGA DE LIBROS
     def cargarLibros(self):
@@ -58,8 +59,7 @@ class ProgramaPrincipal:
         autor = input("Ingrese autor")
         genero = input("Ingrese género")
         precio = float(input("Ingrese precio"))
-        fechaUltimoPrecio = input(
-            "Ingrese la fecha del ultimo precio (dd/mm/aaaa)")
+        fechaUltimoPrecio = datetime.now()
         cantidadDisponible = int(
             input("Ingrese la cantidad disponible del libro"))
 
@@ -145,7 +145,6 @@ class ProgramaPrincipal:
             conexiooon.cerrarConexion()
 
     # 4.CARGAR DISPONIBILIDAD
-
     def cargarDisponibilidad(self):
         conexiooon = Conexiones()
         conexiooon.abrirConexion()
@@ -207,7 +206,7 @@ class ProgramaPrincipal:
         try:
             libro_vendido = int(input("Escriba el ID del libro vendido: "))
             cant_vendida = int(input("Ingrese cantidad vendida: "))
-            fecha = input("Ingrese la fecha de la venta (dd/mm/aaaa): ")
+            fecha = datetime.now()
 
             conexiooon = Conexiones()
             conexiooon.abrirConexion()
@@ -244,15 +243,13 @@ class ProgramaPrincipal:
             conexiooon.cerrarConexion()
 
     # 7.ACTUALIZAR PRECIOS  
-
     def actualizarPrecio(self):
         conexioon = Conexiones()
         conexioon.abrirConexion()
 
         try:
-            print("hola mundo desde actualizar precios")
             porcentaje = float(input("Ingrese el PORCENTAJE"))
-            fechaActual = input("Ingrese la fecha actual en formato dd-mm-aaaa porfis respetar")
+            fechaActual = datetime.now()
 
             libros = conexioon.cursor.execute("SELECT * FROM LIBROS").fetchall()
 
@@ -276,6 +273,33 @@ class ProgramaPrincipal:
         finally:
             conexioon.cerrarConexion()
 
+    #8. MOSTRAR REGISTROS ANTERIORES
+    def registrosAnteriores(self):
+         fecha = input("Por favor, ingrese respetando la siguiente manera (año-mes-dia): ")
+         fecha = datetime.strptime(fecha, "%Y-%m-%d")
+         conexioon = Conexiones()
+         conexioon.abrirConexion()
+
+         try:
+            registros = conexioon.cursor.execute("SELECT ID, ISBM, Titulo, FechaUltimoPrecio FROM LIBROS WHERE FechaUltimoPrecio < ?", (fecha,))
+            
+            if registros:
+                print("Registros anteriores a la fecha ingresada:")
+                for registro in registros:
+                    print("ID:", registro[0])
+                    print("ISBN:", registro[1])
+                    print("Título:", registro[2])
+                    print("Fecha último precio:", registro[3])
+                    print("------------------------")
+            else:
+                print("No existen registros anteriores a la fecha ingresada.")
+
+            conexioon.conexion.commit()
+         except Exception as err:
+            print("Error al mostrar registros")
+            print(err)
+         finally:
+            conexioon.cerrarConexion()
 
     #CREAR TABLAS
     def crearTabla(self):
