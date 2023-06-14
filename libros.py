@@ -1,7 +1,6 @@
 
 import sqlite3
 import math
-from typing import final
 from datetime import datetime
 
 
@@ -128,7 +127,7 @@ class ProgramaPrincipal:
             if libro:
                 
                 confirmarEliminarLibro = int(
-                    input("¿Está seguro que desea eliminar este libro de la tabla? 1= SI / 0= NO"))
+                    input("¿Está seguro que desea eliminar este libro de la tabla? 1= Si / 0= No: "))
 
                 if confirmarEliminarLibro == 1:
                     conexiooon.cursor.execute(
@@ -220,7 +219,6 @@ class ProgramaPrincipal:
                     confirmacion = int(
                         input("Desea registrar la venta? 1-SI / 0-NO : "))
                     if confirmacion == 1:
-                        print("Entro al if perro")
                         cantidad_actual = libro[7]
                         cantidad_restante = cantidad_actual - cant_vendida
                         conexiooon.cursor.execute(
@@ -250,7 +248,7 @@ class ProgramaPrincipal:
         conexioon.abrirConexion()
 
         try:
-            porcentaje = float(input("Ingrese el PORCENTAJE"))
+            porcentaje = float(input("Ingrese el PORCENTAJE: "))
             fechaActual = datetime.now()
 
             libros = conexioon.cursor.execute(
