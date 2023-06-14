@@ -1,5 +1,7 @@
 
 import sqlite3
+import math 
+from typing import final
 
 
 class Conexiones:
@@ -23,11 +25,12 @@ class ProgramaPrincipal:
             print("4-Cargar disponibilidad")
             print("5-Listado de Libros")
             print("6-Ventas")
+            print("7-Actualizar precio")
             print("0-Salir del menú")
 
-            opcion = int(input("Elija una opción:"))
+            opcion = int(input("Elija una opción: "))
 
-            if opcion > 6 or opcion < 0:
+            if opcion > 8 or opcion < 0:
                 print("ERROR : Por favor, ingrese un número entre 0 y 5")
             else:
                 if opcion == 1:
@@ -42,6 +45,10 @@ class ProgramaPrincipal:
                     self.mostrarListado()
                 elif opcion == 6:
                     self.ventas()
+                elif opcion == 7:
+                    self.actualizarPrecio()
+                # elif opcion == 8:
+                    # self.notienenombre()
 
     # 1.CARGA DE LIBROS
     def cargarLibros(self):
@@ -236,8 +243,41 @@ class ProgramaPrincipal:
         finally:
             conexiooon.cerrarConexion()
 
-    # 7.ACTUALIZAR PRECIOS
+    # 7.ACTUALIZAR PRECIOS  
 
+    def actualizarPrecio(self):
+        conexioon = Conexiones()
+        conexioon.abrirConexion()
+
+        try:
+            print("hola mundo desde actualizar precios")
+            porcentaje = float(input("Ingrese el PORCENTAJE"))
+            fechaActual = input("Ingrese la fecha actual en formato dd-mm-aaaa porfis respetar")
+
+            libros = conexioon.cursor.execute("SELECT * FROM LIBROS").fetchall()
+
+            for libro in libros:
+                conexioon.cursor.execute("INSERT INTO HISTORIAL (ISBM, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, CantDisponible) VALUES (?, ?, ?, ?, ?, ?, ?)", (
+                libro[1], libro[2], libro[3], libro[4], libro[5], libro[6], libro[7]))
+                conexioon.conexion.commit()
+                
+                nuevoPrecio = libro[5] + (libro[5] * porcentaje / 100)
+
+                conexioon.cursor.execute("UPDATE LIBROS SET Precio = ? WHERE ID = ?", (nuevoPrecio, libro[0]))
+                conexioon.conexion.commit()
+            
+                conexioon.cursor.execute("UPDATE LIBROS SET FechaUltimoPrecio = ?", (fechaActual,))
+                conexioon.conexion.commit()
+
+            print("Precio modificado CORRECTAMENTE")
+
+        except:
+            print("epa")
+        finally:
+            conexioon.cerrarConexion()
+
+
+    #CREAR TABLAS
     def crearTabla(self):
         miConexion = Conexiones()
         miConexion.abrirConexion()
@@ -249,6 +289,11 @@ class ProgramaPrincipal:
         miConexion.cursor.execute(
             "CREATE TABLE VENTAS (ID INTEGER PRIMARY KEY AUTOINCREMENT,libro_id INTEGER,cantidadVendida INTEGER,fecha VARCHAR(50))")
         miConexion.conexion.commit()
+        # TABLA HISTORICA
+        miConexion.cursor.execute("DROP TABLE IF EXISTS HISTORIAL")
+        miConexion.cursor.execute(
+            "CREATE TABLE HISTORIAL (ID INTEGER PRIMARY KEY AUTOINCREMENT, ISBM VARCHAR(50) UNIQUE, Titulo VARCHAR(50), Autor VARCHAR(50), Genero VARCHAR(50), Precio FLOAT NOT NULL, FechaUltimoPrecio VARCHAR(50), CantDisponible INTEGER)"
+        )
         miConexion.cerrarConexion()
     
 
