@@ -7,11 +7,20 @@ class Conexiones:
         self.conexion = sqlite3.connect("Biblioteca.db")
         self.cursor = self.conexion.cursor()
 
+
     def cerrarConexion(self):
         self.conexion.close()
 
-class ProgramaPrincipal:
+#class Conexiones2:
+    #def abrirConexionVentas(self):
+        # Conexión a la base de datos de las ventas
+      #  self.conexion2 = sqlite3.connect("Ventas.db")
+     #   self.cursorVentas = self.conexion2.cursorVentas()
+    #def cerrarConexionVentas(self):
+        #self.conexion2.close()
 
+
+class ProgramaPrincipal:
     #MENU
     def menu(self):
         while True:
@@ -21,11 +30,12 @@ class ProgramaPrincipal:
             print("3-Borrar un libro")
             print("4-Cargar disponibilidad")
             print("5-Listado de Libros")
+            print("6-Ventas")
             print("0-Salir del menú")
 
             opcion = int(input("Elija una opción:"))
 
-            if opcion > 5 or opcion < 0:
+            if opcion > 6 or opcion < 0:
                 print("ERROR : Por favor, ingrese un número entre 0 y 5")
             else:
                 if opcion == 1:
@@ -36,6 +46,8 @@ class ProgramaPrincipal:
                     self.borrarLibro()
                 elif opcion == 5:
                     self.mostrarListado()
+                elif opcion == 6:
+                    self.ventas()
 
     #1.CARGA DE LIBROS
     def cargarLibros(self):
@@ -121,12 +133,7 @@ class ProgramaPrincipal:
         finally:
             conexiooon.cerrarConexion()
 
-
-
-
-
     #5.MOSTRAR LA LISTA DE LIBROS
-
     def mostrarListado(self):
         conexiooon = Conexiones()
         conexiooon.abrirConexion()
@@ -143,14 +150,57 @@ class ProgramaPrincipal:
         finally:
             conexiooon.cerrarConexion()
 
+    #6.VENTAS
+    def ventas(self):
+        print("Hola desde ventas")
+        try:
+          libro_vendido = int(input("Escriba el ID del libro vendido: "))
+          cant_vendida= int(input("Ingrese cantidad vendida: "))
+          fecha = input("Ingrese la fecha de la venta (dd/mm/aaaa): ")
+          
+          conexiooon = Conexiones()
+          conexiooon.abrirConexion()
+          
+          libro = conexiooon.cursor.execute("SELECT * FROM LIBROS WHERE ID = ?", (libro_vendido,)).fetchone()
+          if libro:
+              if cant_vendida <= libro[7]:
+                  confirmacion= int(input("Desea registrar la venta? 1-SI / 0-NO : "))
+                  if confirmacion==1:
+                    print("Entro al if perro")
+                    cantidad_actual = libro[7]
+                    cantidad_restante= cantidad_actual - cant_vendida
+                    conexiooon.cursor.execute("INSERT INTO VENTAS (libro_id, cantidadVendida, fecha) VALUES (?, ?, ?)", (libro_vendido, cant_vendida, fecha))
+                    
+                    conexiooon.cursor.execute("UPDATE LIBROS SET CantDisponible = ? WHERE ID = ? ", (cantidad_restante, libro_vendido))
+                    
+                    conexiooon.conexion.commit()
+                    print("Registro EXITOSO")
+                  else:
+                      print("Registro de venta CANCELADO")
+              else:
+                  print("La cantidad es mayor al stock actual")
+          else:  
+              print("No se encontro el libro con el id ingresado")      
+        except Exception as err:
+            print("Algo salió mal:", err)
+        except:
+            print("Algo salio mal")
+        finally:  
+           conexiooon.cerrarConexion()  
+
+    #7.ACTUALIZAR PRECIOS   
+
     def crearTabla(self):
         miConexion = Conexiones()
         miConexion.abrirConexion()
         miConexion.cursor.execute("DROP TABLE IF EXISTS LIBROS")
         miConexion.cursor.execute("CREATE TABLE LIBROS (ID INTEGER PRIMARY KEY AUTOINCREMENT, ISBM VARCHAR(50) UNIQUE, Titulo VARCHAR(50), Autor VARCHAR(50), Genero VARCHAR(50), Precio FLOAT NOT NULL, FechaUltimoPrecio VARCHAR(50), CantDisponible INTEGER)")
+       #TABLA VENTAS
+        miConexion.cursor.execute("DROP TABLE IF EXISTS VENTAS")
+        miConexion.cursor.execute("CREATE TABLE VENTAS (ID INTEGER PRIMARY KEY AUTOINCREMENT,libro_id INTEGER,cantidadVendida INTEGER,fecha VARCHAR(50))")
         miConexion.conexion.commit()
         miConexion.cerrarConexion()
-
+    
 
 
 programa = ProgramaPrincipal()
