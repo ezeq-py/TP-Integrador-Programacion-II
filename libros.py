@@ -1,8 +1,9 @@
 
 import sqlite3
-import math 
+import math
 from typing import final
 from datetime import datetime
+
 
 class Conexiones:
 
@@ -10,29 +11,30 @@ class Conexiones:
         self.conexion = sqlite3.connect("Biblioteca.db")
         self.cursor = self.conexion.cursor()
 
-
     def cerrarConexion(self):
         self.conexion.close()
+
 
 class ProgramaPrincipal:
     # MENU
     def menu(self):
         while True:
-            print("----------MENÚ--------------")
-            print("1-Cargar Libros")
-            print("2-Modificar precio de un libro")
-            print("3-Borrar un libro")
-            print("4-Cargar disponibilidad")
-            print("5-Listado de Libros")
-            print("6-Ventas")
-            print("7-Actualizar precio")
-            print("8-Registros por fecha")
-            print("0-Salir del menú")
-
-            opcion = int(input("Elija una opción: "))
+            print("\n ----------MENÚ--------------")
+            print(" 1-Cargar Libros")
+            print(" 2-Modificar precio de un libro")
+            print(" 3-Borrar un libro")
+            print(" 4-Cargar disponibilidad")
+            print(" 5-Listado de Libros")
+            print(" 6-Ventas")
+            print(" 7-Actualizar precio")
+            print(" 8-Registros por fecha")
+            print(" 0-Salir del menú")
+            print("---------------------------")
+            opcion = int(input(" ELIJA UNA OPCIÓN DEL MENÚ ANTERIOR: "))
+            
 
             if opcion > 8 or opcion < 0:
-                print("ERROR : Por favor, ingrese un número entre 0 y 5")
+                print("ERROR : Por favor, ingrese un número entre 0 y 8")
             else:
                 if opcion == 1:
                     self.cargarLibros()
@@ -50,18 +52,17 @@ class ProgramaPrincipal:
                     self.actualizarPrecio()
                 elif opcion == 8:
                     self.registrosAnteriores()
-
+            
     # 1.CARGA DE LIBROS
     def cargarLibros(self):
-        print("hola desde cargar libros")
-        isbm = input("Ingrese ISBM")
-        titulo = input("Ingrese titulo")
-        autor = input("Ingrese autor")
-        genero = input("Ingrese género")
-        precio = float(input("Ingrese precio"))
+        isbm = input("Ingrese ISBM: ")
+        titulo = input("Ingrese titulo: ")
+        autor = input("Ingrese autor: ")
+        genero = input("Ingrese género: ")
+        precio = float(input("Ingrese precio: "))
         fechaUltimoPrecio = datetime.now()
         cantidadDisponible = int(
-            input("Ingrese la cantidad disponible del libro"))
+            input("Ingrese la cantidad disponible del libro: "))
 
         miConexion = Conexiones()
         miConexion.abrirConexion()
@@ -70,7 +71,7 @@ class ProgramaPrincipal:
             miConexion.cursor.execute("INSERT INTO LIBROS (ISBM, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, CantDisponible) VALUES (?, ?, ?, ?, ?, ?, ?)", (
                 isbm, titulo, autor, genero, precio, fechaUltimoPrecio, cantidadDisponible))
             miConexion.conexion.commit()
-            print("Se cargo el libro correctamente")
+            print("SUCCESS: Se cargo el libro correctamente")
         except:
             print("ERROR : No se pudo cargar el libro")
         finally:
@@ -82,36 +83,35 @@ class ProgramaPrincipal:
         conexiooon.abrirConexion()
 
         try:
-            buscar = int(
-                input("Escriba el ID del libro que desea modificar: "))
+            buscar = int(input("Escriba el ID del libro que desea modificar: "))
             nuevo_precio = float(input("Ingrese el nuevo precio del libro: "))
 
             libro = conexiooon.cursor.execute(
                 "SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
+            print("Se encontro el libro")
 
             if libro:
-                print("Se encontro el libro")
-                confirmacion = int(
-                    input("¿Está seguro de realizar la modificación? 1 = SII RE/0 = No :("))
+                confirmacion = int(input("¿Está seguro de realizar la modificación? 1 = Sí / 0 = No: "))
 
                 if confirmacion == 1:
                     conexiooon.cursor.execute(
                         "UPDATE LIBROS SET Precio = ? WHERE ID = ?", (nuevo_precio, buscar))
                     conexiooon.conexion.commit()
 
-                    print("La MODIFICACIÓN, ha sido REALIZADA")
+                    print("\n[SUCCESS: La modificación ha sido realizada.]")
                 else:
-                    print("MODIFICACIÓN, CANCELADA")
+                    print("ERROR: Modificación cancelada.")
 
             else:
-                print("No se encontró ningún libro con el ID proporcionado.")
+                print("ERROR: No se encontró ningún libro con el ID proporcionado.")
 
         except ValueError:
-            print("El ID debe ser un número entero.")
-        except:
-            print("Ocurrió un error al intentar MODIFICAR el libro.")
+            print("ERROR: El ID debe ser un número entero.")
+        except Exception as e:
+            print("ERROR: Ocurrió un error al intentar modificar el libro:", str(e))
         finally:
             conexiooon.cerrarConexion()
+
 
     # 3.BORRAR LIBRO
     def borrarLibro(self):
@@ -121,9 +121,10 @@ class ProgramaPrincipal:
             buscar = int(input("Escriba el ID del libro que desea eliminar: "))
             libro = conexiooon.cursor.execute(
                 "SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
+            print("Se encontro el libro")
 
             if libro:
-                print("Se encontro el libro")
+                
                 confirmarEliminarLibro = int(
                     input("¿Está seguro que desea eliminar este libro de la tabla? 1= SI / 0= NO"))
 
@@ -131,11 +132,11 @@ class ProgramaPrincipal:
                     conexiooon.cursor.execute(
                         "DELETE FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
                     conexiooon.conexion.commit()
-                    print("Se ha ELIMINADO el libro")
+                    print("\n[SUCCESS: Se elimino el libro correctamente]")
                 else:
-                    print("ELIMINACIÓN, CANCELADA")
+                    print("\n[ERROR: Eliminacion cancelada.]")
             else:
-                print("No se encontró ningún libro con el ID proporcionado.")
+                print("No se encontró ningún libro con el ID proporcionado.]")
 
         except ValueError:
             print("El ID debe ser un número entero.")
@@ -167,9 +168,9 @@ class ProgramaPrincipal:
                     conexiooon.cursor.execute(
                         "UPDATE Libros SET CantDisponible = ? WHERE ID = ?", (nueva_cantidad, buscar))
                     conexiooon.conexion.commit()
-                    print("La cantidad disponible ha sido actualizada.")
+                    print("\n[SUCCESS: La cantidad disponible ha sido actualizada.]")
                 else:
-                    print("Incremento cancelado.")
+                    print("\n[ERROR: Incremento cancelado.]")
             else:
                 print("No se encontró ningún libro con el ID proporcionado.")
 
@@ -190,19 +191,18 @@ class ProgramaPrincipal:
             libros = conexiooon.cursor.execute(
                 "SELECT * FROM LIBROS ORDER BY ID, Autor, Titulo").fetchall()
 
-            print("----- LISTADO DE LIBROS -----")
+            print("\n ----- LISTADO DE LIBROS -----")
             for libro in libros:
                 print(
-                    f"ID: {libro[0]}, Autor: {libro[3]}, Título: {libro[2]}, cantidad: {libro[7]}")
+                    f"ID: {libro[0]}, Autor: {libro[3]}, Título: {libro[2]}, Cantidad: {libro[7]}, Precio: {libro[4]} ")
 
         except:
-            print("epaa")
+            print("\n[ERROR: Ocurrió un error al mostrar el listado de libros.]")
         finally:
             conexiooon.cerrarConexion()
 
     # 6.VENTAS
     def ventas(self):
-        print("Hola desde ventas")
         try:
             libro_vendido = int(input("Escriba el ID del libro vendido: "))
             cant_vendida = int(input("Ingrese cantidad vendida: "))
@@ -228,13 +228,13 @@ class ProgramaPrincipal:
                             "UPDATE LIBROS SET CantDisponible = ? WHERE ID = ? ", (cantidad_restante, libro_vendido))
 
                         conexiooon.conexion.commit()
-                        print("Registro EXITOSO")
+                        print("\n[SUCCES: Registro exitoso]")
                     else:
-                        print("Registro de venta CANCELADO")
+                        print("\n[ERROR: Registro de venta cancelado]")
                 else:
                     print("La cantidad es mayor al stock actual")
             else:
-                print("No se encontro el libro con el id ingresado")
+                print("No se encontro el libro con el id ingresado")    
         except Exception as err:
             print("Algo salió mal:", err)
         except:
@@ -242,7 +242,7 @@ class ProgramaPrincipal:
         finally:
             conexiooon.cerrarConexion()
 
-    # 7.ACTUALIZAR PRECIOS  
+    # 7.ACTUALIZAR PRECIOS
     def actualizarPrecio(self):
         conexioon = Conexiones()
         conexioon.abrirConexion()
@@ -251,36 +251,41 @@ class ProgramaPrincipal:
             porcentaje = float(input("Ingrese el PORCENTAJE"))
             fechaActual = datetime.now()
 
-            libros = conexioon.cursor.execute("SELECT * FROM LIBROS").fetchall()
+            libros = conexioon.cursor.execute(
+                "SELECT * FROM LIBROS").fetchall()
 
             for libro in libros:
                 conexioon.cursor.execute("INSERT INTO HISTORIAL (ISBM, Titulo, Autor, Genero, Precio, FechaUltimoPrecio, CantDisponible) VALUES (?, ?, ?, ?, ?, ?, ?)", (
-                libro[1], libro[2], libro[3], libro[4], libro[5], libro[6], libro[7]))
+                    libro[1], libro[2], libro[3], libro[4], libro[5], libro[6], libro[7]))
                 conexioon.conexion.commit()
-                
+
                 nuevoPrecio = libro[5] + (libro[5] * porcentaje / 100)
 
-                conexioon.cursor.execute("UPDATE LIBROS SET Precio = ? WHERE ID = ?", (nuevoPrecio, libro[0]))
-                conexioon.conexion.commit()
-            
-                conexioon.cursor.execute("UPDATE LIBROS SET FechaUltimoPrecio = ?", (fechaActual,))
+                conexioon.cursor.execute(
+                    "UPDATE LIBROS SET Precio = ? WHERE ID = ?", (nuevoPrecio, libro[0]))
                 conexioon.conexion.commit()
 
-            print("Precio modificado CORRECTAMENTE")
+                conexioon.cursor.execute(
+                    "UPDATE LIBROS SET FechaUltimoPrecio = ?", (fechaActual,))
+                conexioon.conexion.commit()
 
-        except:
-            print("epa")
+            print("\n[SUCCESS: Precio modificado correctamente]")
+
+        except ValueError as e:
+            print("ERROR: ", str(e))
+        except Exception as e:
+            print("\n[ERROR:Ocurrió un error al actualizar el precio]", str(e))
         finally:
             conexioon.cerrarConexion()
 
     #8. MOSTRAR REGISTROS ANTERIORES
     def registrosAnteriores(self):
-         fecha = input("Por favor, ingrese respetando la siguiente manera (año-mes-dia): ")
-         fecha = datetime.strptime(fecha, "%Y-%m-%d")
-         conexioon = Conexiones()
-         conexioon.abrirConexion()
+        fecha = input("Por favor, ingrese respetando la siguiente manera (AAAA-MM-DD): ")
+        fecha = datetime.strptime(fecha, "%Y-%m-%d")
+        conexioon = Conexiones()
+        conexioon.abrirConexion()
 
-         try:
+        try:
             registros = conexioon.cursor.execute("SELECT ID, ISBM, Titulo, FechaUltimoPrecio FROM LIBROS WHERE FechaUltimoPrecio < ?", (fecha,))
             
             if registros:
@@ -295,13 +300,13 @@ class ProgramaPrincipal:
                 print("No existen registros anteriores a la fecha ingresada.")
 
             conexioon.conexion.commit()
-         except Exception as err:
+        except Exception as err:
             print("Error al mostrar registros")
             print(err)
-         finally:
+        finally:
             conexioon.cerrarConexion()
 
-    #CREAR TABLAS
+    # CREAR TABLAS
     def crearTabla(self):
         miConexion = Conexiones()
         miConexion.abrirConexion()
@@ -319,7 +324,7 @@ class ProgramaPrincipal:
             "CREATE TABLE HISTORIAL (ID INTEGER PRIMARY KEY AUTOINCREMENT, ISBM VARCHAR(50) UNIQUE, Titulo VARCHAR(50), Autor VARCHAR(50), Genero VARCHAR(50), Precio FLOAT NOT NULL, FechaUltimoPrecio VARCHAR(50), CantDisponible INTEGER)"
         )
         miConexion.cerrarConexion()
-    
+
 
 programa = ProgramaPrincipal()
 programa.crearTabla()
