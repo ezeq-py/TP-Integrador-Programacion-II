@@ -52,6 +52,8 @@ class ProgramaPrincipal:
                     self.actualizarPrecio()
                 elif opcion == 8:
                     self.registrosAnteriores()
+                elif opcion == 0:
+                    break
             
     # 1.CARGA DE LIBROS
     def cargarLibros(self):
