@@ -89,9 +89,9 @@ class ProgramaPrincipal:
 
             libro = conexiooon.cursor.execute(
                 "SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
-            print("Se encontro el libro")
 
             if libro:
+                print("Se encontro el libro")
                 confirmacion = int(input("¿Está seguro de realizar la modificación? 1 = Sí / 0 = No: "))
 
                 if confirmacion == 1:
@@ -122,10 +122,9 @@ class ProgramaPrincipal:
             buscar = int(input("Escriba el ID del libro que desea eliminar: "))
             libro = conexiooon.cursor.execute(
                 "SELECT * FROM LIBROS WHERE ID = ?", (buscar,)).fetchone()
-            print("Se encontro el libro")
 
             if libro:
-                
+                print("Se encontro el libro")
                 confirmarEliminarLibro = int(
                     input("¿Está seguro que desea eliminar este libro de la tabla? 1= Si / 0= No: "))
 
